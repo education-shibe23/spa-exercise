@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>  
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+
+<div id="app">
+  <div>
+    <input
+      v-for="pref in _.range(1, 48)"
+      v-on:change="changeGraph($event.target.checked, pref)"
+      type="checkbox"
+    >
+  </div>
+
+  <p>Prefecture Code: {{ prefCode }}</p>
+  <p v-if="!jsonData">Loading ...</p>
+  <pre v-else>{{ jsonData }}</pre>
+</div>
+
+<script>
+Vue.createApp({
+  data() {
+    return {
+      prefCode: 1,
+      jsonData: null,
+    };
+  },
+
+  methods: {
+    changeGraph(checked, pref) {
+      if (checked) {
+        this.prefCode = pref;
+        this.fetchData();
+      }
+    },
+
+    async fetchData() {
+      this.jsonData = null;
+      
+      const options = {
+        headers: {
+          'X-API-KEY': '※※※ ここに自分の API キーを入れる ※※※',
+        },
+      };
+      
+      const res = await fetch(
+        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?cityCode=-&prefCode=${this.prefCode}`,
+        options,
+      );
+      
+      this.jsonData = await res.json();
+    }
+  },
+
+  mounted() {
+    this.fetchData();
+  },
+}).mount('#app')
+</script>
+
+</body>
+
+</html>
