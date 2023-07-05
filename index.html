@@ -20,7 +20,13 @@
 
   <p>Prefecture Code: {{ prefCode }}</p>
   <p v-if="!jsonData">Loading ...</p>
-  <pre v-else>{{ jsonData }}</pre>
+  <div v-else>
+    <ul>
+      <li v-for="prefData in jsonData">
+        {{ prefData.year }} : <span v-bind:style="{ display: 'inline-block', 'background-color': 'gray', width: (prefData.value / 10000) + 'px', height: '10px' }"></span>
+      </li>
+    </ul>
+  </div>
 </div>
 
 <script>
@@ -55,6 +61,13 @@ Vue.createApp({
       );
       
       this.jsonData = await res.json();
+      // 事前の jsonData すなわち RESAS API の生のデータから ...
+      //
+      // .result -> result というプロパティをたどり ...
+      // .data   -> さらに data というプロパティをたどり ...
+      // [0]     -> ↑が配列になるので、その最初の要素を取り ...
+      // .data   -> 年 / 数値だけの配列まで取り出す
+      this.jsonData = this.jsonData.result.data[0].data;
     }
   },
 
