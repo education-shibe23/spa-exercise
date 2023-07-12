@@ -11,11 +11,13 @@
 
 <div id="app">
   <div>
-    <input
-      v-for="pref in _.range(1, 48)"
-      v-on:change="changeGraph($event.target.checked, pref)"
-      type="checkbox"
-    >
+    <span v-for="pref in prefData">
+      {{ pref.prefName }}
+      <input
+        v-on:change="changeGraph($event.target.checked, pref.prefCode)"
+        type="checkbox"
+      >
+    </span>
   </div>
 
   <p>Prefecture Code: {{ prefCode }}</p>
@@ -35,6 +37,7 @@ Vue.createApp({
     return {
       prefCode: 1,
       jsonData: null,
+      prefData: null,
     };
   },
 
@@ -71,8 +74,21 @@ Vue.createApp({
     }
   },
 
-  mounted() {
+  async mounted() {
     this.fetchData();
+
+    const options = {
+      headers: {
+        'X-API-KEY': 'P2ZVdJyoIZXZDhzvaaCMXMZnv8Tq6ypYDLNQFAu0',
+      },
+    };
+
+    const res = await fetch(
+      'https://opendata.resas-portal.go.jp/api/v1/prefectures',
+      options,
+    );
+
+    this.prefData = (await res.json()).result;
   },
 }).mount('#app')
 </script>
