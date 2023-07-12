@@ -10,7 +10,13 @@
 <body>
 
 <div id="app">
-  <div>
+  <h2>API Key Input</h2>
+  <input type="text" v-model="apiKey">
+  <button v-on:click="fetchPrefectureNames(); fetchData();">読み込み</button>
+
+  <h2>Prefecture Checkbox</h2>
+  <p v-if="!prefData">Loading ...</p>
+  <div v-else>
     <span v-for="pref in prefData">
       {{ pref.prefName }}
       <input
@@ -20,7 +26,7 @@
     </span>
   </div>
 
-  <p>Prefecture Code: {{ prefCode }}</p>
+  <h2>Prefecture Code: {{ prefCode }}</h2>
   <p v-if="!jsonData">Loading ...</p>
   <div v-else>
     <ul>
@@ -35,6 +41,7 @@
 Vue.createApp({
   data() {
     return {
+      apiKey: '',
       prefCode: 1,
       jsonData: null,
       prefData: null,
@@ -49,12 +56,27 @@ Vue.createApp({
       }
     },
 
+    async fetchPrefectureNames() {
+      const options = {
+        headers: {
+          'X-API-KEY': this.apiKey,
+        },
+      };
+
+      const res = await fetch(
+        'https://opendata.resas-portal.go.jp/api/v1/prefectures',
+        options,
+      );
+
+      this.prefData = (await res.json()).result;
+    },
+
     async fetchData() {
       this.jsonData = null;
       
       const options = {
         headers: {
-          'X-API-KEY': '※※※ ここに自分の API キーを入れる ※※※',
+          'X-API-KEY': this.apiKey,
         },
       };
       
@@ -72,23 +94,6 @@ Vue.createApp({
       // .data   -> 年 / 数値だけの配列まで取り出す
       this.jsonData = this.jsonData.result.data[0].data;
     }
-  },
-
-  async mounted() {
-    this.fetchData();
-
-    const options = {
-      headers: {
-        'X-API-KEY': 'P2ZVdJyoIZXZDhzvaaCMXMZnv8Tq6ypYDLNQFAu0',
-      },
-    };
-
-    const res = await fetch(
-      'https://opendata.resas-portal.go.jp/api/v1/prefectures',
-      options,
-    );
-
-    this.prefData = (await res.json()).result;
   },
 }).mount('#app')
 </script>
