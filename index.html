@@ -10,10 +10,10 @@
 <body>
 
 <div id="app">
-  <h2>API Key Input</h2>
-  <input type="text" v-model="apiKey">
-  <button v-on:click="fetchPrefectureNames(); fetchData();">読み込み</button>
-
+  <api-key-input
+    @change-api-key="(key) => apiKey = key"
+    @click-button="fetchPrefectureNames(); fetchData();">
+  </api-key-input>
   <h2>Prefecture Checkbox</h2>
   <p v-if="!prefData">Loading ...</p>
   <div v-else>
@@ -38,7 +38,32 @@
 </div>
 
 <script>
+const ApiKeyInput = {
+  emits: ['changeApiKey', 'clickButton'],
+  data() {
+    return {
+      apiKey: ''
+    }
+  },
+  methods: {
+    emitApiKey() {
+      this.$emit('changeApiKey', this.apiKey);
+    },
+    emitSubmitButton() {
+      this.$emit('clickButton');
+    }
+  },
+  template: `
+  <h2>API Key Input</h2>
+  <input type="text" v-model="apiKey" @change="emitApiKey">
+  <button @click="emitSubmitButton">読み込み</button>
+  `
+}
+
 Vue.createApp({
+  components: {
+    ApiKeyInput  
+  },
   data() {
     return {
       apiKey: '',
