@@ -12,7 +12,8 @@
 <div id="app">
   <api-key-input
     @change-api-key="(key) => apiKey = key"
-    @click-button="fetchPrefectureNames(); fetchData();">
+    @click-button="fetchPrefectureNames(); fetchData();"
+  >
   </api-key-input>
   <h2>Prefecture Checkbox</h2>
   <p v-if="!prefData">Loading ...</p>
