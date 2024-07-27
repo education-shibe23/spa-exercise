@@ -15,18 +15,11 @@
     @click-button="fetchPrefectureNames(); fetchData();"
   >
   </api-key-input>
-  <h2>Prefecture Checkbox</h2>
-  <p v-if="!prefData">Loading ...</p>
-  <div v-else>
-    <span v-for="pref in prefData">
-      {{ pref.prefName }}
-      <input
-        v-on:change="changeGraph($event.target.checked, pref.prefCode)"
-        type="checkbox"
-      >
-    </span>
-  </div>
-
+  <prefecture-checkbox
+    :pref-data="prefData"
+    @pref-checkbox-checked="changeGraph"
+  >
+  </prefecture-checkbox>
   <h2>Prefecture Code: {{ prefCode }}</h2>
   <p v-if="!jsonData">Loading ...</p>
   <div v-else>
@@ -61,9 +54,32 @@ const ApiKeyInput = {
   `
 }
 
+const PrefectureCheckbox = {
+  emits:['prefCheckboxChecked'],
+  props: ['prefData'],
+  methods: {
+    emitChecked(checked, prefCode) {
+      this.$emit('prefCheckboxChecked', checked, prefCode);
+    },
+  },
+  template: `
+  <h2>Prefecture Checkbox</h2>
+  <p v-if="!prefData">Loading ...</p>
+  <div v-else>
+    <span v-for="pref in prefData">
+      {{ pref.prefName }}
+      <input
+        v-on:change="emitChecked($event.target.checked, pref.prefCode)"
+        type="checkbox"
+      >
+    </span>
+  </div>
+  `
+}
 Vue.createApp({
   components: {
-    ApiKeyInput  
+    ApiKeyInput,
+    PrefectureCheckbox
   },
   data() {
     return {
