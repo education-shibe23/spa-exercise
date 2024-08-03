@@ -20,15 +20,11 @@
     @pref-checkbox-checked="changeGraph"
   >
   </prefecture-checkbox>
-  <h2>Prefecture Code: {{ prefCode }}</h2>
-  <p v-if="!jsonData">Loading ...</p>
-  <div v-else>
-    <ul>
-      <li v-for="prefData in jsonData">
-        {{ prefData.year }} : <span v-bind:style="{ display: 'inline-block', 'background-color': 'gray', width: (prefData.value / 10000) + 'px', height: '10px' }"></span>
-      </li>
-    </ul>
-  </div>
+  <population-graph
+    :json-data="jsonData"
+    :pref-code="prefCode"
+  >
+  </population-graph>
 </div>
 
 <script>
@@ -54,6 +50,21 @@ const ApiKeyInput = {
   `
 }
 
+const PopulationGraph  = {
+  props: ['jsonData', 'prefCode'],
+  template: `
+  <h2>Prefecture Code: {{ prefCode }}</h2>
+  <p v-if="!jsonData">Loading ...</p>
+  <div v-else>
+    <ul>
+      <li v-for="prefData in jsonData">
+        {{ prefData.year }} : <span v-bind:style="{ display: 'inline-block', 'background-color': 'gray', width: (prefData.value / 10000) + 'px', height: '10px' }"></span>
+      </li>
+    </ul>
+  </div>
+  `
+}
+
 const PrefectureCheckbox = {
   emits:['prefCheckboxChecked'],
   props: ['prefData'],
@@ -76,10 +87,12 @@ const PrefectureCheckbox = {
   </div>
   `
 }
+
 Vue.createApp({
   components: {
     ApiKeyInput,
-    PrefectureCheckbox
+    PrefectureCheckbox,
+    PopulationGraph,
   },
   data() {
     return {
